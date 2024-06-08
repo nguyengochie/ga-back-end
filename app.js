@@ -65,6 +65,28 @@ app.get('/:name/detail/:id', async (req, res) => {
   else res.status(404).json({ data: null, message: 'data not found!' });
 });
 
+app.get('/:name/category/:code', async (req, res) => {
+  const name = req?.params?.name;
+  const code = req?.params?.code;
+
+  const data = await readJSON(`./data/${name}-category.json`);
+  const products = await readJSON(`./data/${name}.json`);
+  if (!data || !products)
+    res.status(404).json({ data: null, message: 'data not found!' });
+
+  const productsByCate = products?.filter((i) => i?.category === code);
+  const foundItem = data?.find((i) => i?.code === code);
+  if (foundItem)
+    res
+      .status(200)
+      .json(
+        foundItem
+          ? { category: { ...foundItem, products: productsByCate } }
+          : { category: null },
+      );
+  else res.status(404).json({ data: null, message: 'data not found!' });
+});
+
 // app.get('/user-places', async (req, res) => {
 //   const fileContent = await fs.readFile('./data/user-tho.json');
 
